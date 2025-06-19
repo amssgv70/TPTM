@@ -8,23 +8,16 @@ import google.generativeai as genai
 # === CONFIGURACIÓN BÁSICA DE LA APP ===
 st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
 
-# === ENCABEZADO VISUAL (se ve SIEMPRE) ===
-# st.image("https://commons.wikimedia.org/wiki/File:Belgrano-norte-4.jpg", width=120)
-# st.markdown("## Clasificador de Quejas del Transporte Público")
 
-# === VERIFICACIÓN DE CÓDIGO SECRETO ===
+# Obtener el código válido desde variable de entorno (o valor por defecto para pruebas)
 codigo_valido = os.getenv("CODIGO_ACCESO", "clasificar2024")
 
-# Inicializar estado
+# Inicializar estado de sesión
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
-if "codigo_ingresado" not in st.session_state:
-    st.session_state.codigo_ingresado = ""
 
-# Si ya autenticado, continuar
-if st.session_state.autenticado:
-    st.success("✅ Acceso concedido. Bienvenido.")
-else:
+# Si no está autenticado, mostrar formulario y detener app si no es válido
+if not st.session_state.autenticado:
     with st.form("form_codigo"):
         st.markdown("### 🔒 Acceso restringido")
         codigo = st.text_input("Ingresá el código de acceso:", type="password")
@@ -33,10 +26,10 @@ else:
     if submit:
         if codigo == codigo_valido:
             st.session_state.autenticado = True
-            st.rerun()  # ¡Esto se ejecuta fuera del form!
+            st.experimental_rerun()  # volver a cargar sin el formulario
         else:
             st.error("❌ Código incorrecto.")
-            st.stop()
+    st.stop()  # Detener todo lo demás hasta que esté autenticado
 
 
 
