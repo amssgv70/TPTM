@@ -13,27 +13,34 @@ st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
 # st.markdown("## Clasificador de Quejas del Transporte Público")
 
 # === VERIFICACIÓN DE CÓDIGO SECRETO ===
-# Configurar código desde variable de entorno
-codigo_valido = os.getenv("CODIGO_ACCESO", "clasificar2024")  # valor por defecto si no está seteado
+codigo_valido = os.getenv("CODIGO_ACCESO", "clasificar2024")
 
-# === CONTROL DE ACCESO CON SESIÓN ===
+# Inicializar estado
 if "autenticado" not in st.session_state:
     st.session_state.autenticado = False
+if "codigo_ingresado" not in st.session_state:
+    st.session_state.codigo_ingresado = ""
 
-if not st.session_state.autenticado:
+# Si ya autenticado, continuar
+if st.session_state.autenticado:
+    st.success("✅ Acceso concedido. Bienvenido.")
+else:
     with st.form("form_codigo"):
         st.markdown("### 🔒 Acceso restringido")
-        codigo_ingresado = st.text_input("Ingresá el código de acceso:", type="password")
+        codigo = st.text_input("Ingresá el código de acceso:", type="password")
         submit = st.form_submit_button("Ingresar")
 
-        if submit:
-            if codigo_ingresado == codigo_valido:
-                st.success("✅ Acceso concedido. Bienvenido.")
-                st.session_state.autenticado = True
-                st.experimental_rerun()  # recarga la app sin el formulario
-            else:
-                st.error("❌ Código incorrecto.")
-    st.stop()  # No deja avanzar si no está autenticado
+    if submit:
+        if codigo == codigo_valido:
+            st.session_state.autenticado = True
+            st.rerun()  # ¡Esto se ejecuta fuera del form!
+        else:
+            st.error("❌ Código incorrecto.")
+            st.stop()
+
+
+
+
 
 
 # === CONFIGURACIÓN DE GEMINI ===
