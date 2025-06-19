@@ -6,7 +6,7 @@ import os
 import google.generativeai as genai
 
 # === CONFIGURACIÓN BÁSICA DE LA APP ===
-st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
+#st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
 
 
 # Obtener el código válido desde variable de entorno (o valor por defecto para pruebas)
