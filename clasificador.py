@@ -89,10 +89,10 @@ Texto: {texto}
 st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
 st.title("🧾 Clasificador de Quejas de Pasajeros")
 
-modo = st.radio("¿Qué querés hacer?", ["📝 Clasificar una queja manual", "📂 Clasificar archivo Excel/CSV"])
+modo = st.radio("¿Qué querés hacer?", ["📝 Clasificar una queja manualmente", "📂 Clasificar archivo Excel/CSV"])
 
 # === MODO 1: CLASIFICACIÓN MANUAL ===
-if modo == "📝 Clasificar una queja manual":
+if modo == "📝 Clasificar una queja manualmente":
     texto = st.text_area("✏️ Ingresá una queja", height=200)
 
     if st.button("📊 Clasificar queja"):
