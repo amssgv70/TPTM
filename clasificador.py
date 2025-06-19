@@ -9,22 +9,31 @@ import google.generativeai as genai
 st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
 
 # === ENCABEZADO VISUAL (se ve SIEMPRE) ===
-st.image("https://commons.wikimedia.org/wiki/File:Belgrano-norte-4.jpg", width=120)
-st.markdown("## Clasificador de Quejas del Transporte Público")
+# st.image("https://commons.wikimedia.org/wiki/File:Belgrano-norte-4.jpg", width=120)
+# st.markdown("## Clasificador de Quejas del Transporte Público")
 
 # === VERIFICACIÓN DE CÓDIGO SECRETO ===
-codigo_valido = os.getenv("CODIGO_ACCESO")
+# Configurar código desde variable de entorno
+codigo_valido = os.getenv("CODIGO_ACCESO", "clasificar2024")  # valor por defecto si no está seteado
 
-with st.form("form_codigo"):
-    st.markdown("### 🔒 Acceso restringido")
-    codigo_ingresado = st.text_input("Ingresá el código de acceso:", type="password")
-    submit = st.form_submit_button("Ingresar")
+# === CONTROL DE ACCESO CON SESIÓN ===
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
 
-if not submit or codigo_ingresado != codigo_valido:
-    st.warning("⚠️ Acceso denegado. Ingresá un código válido.")
-    st.stop()
-else:
-    st.success("✅ Acceso concedido. Bienvenido.")
+if not st.session_state.autenticado:
+    with st.form("form_codigo"):
+        st.markdown("### 🔒 Acceso restringido")
+        codigo_ingresado = st.text_input("Ingresá el código de acceso:", type="password")
+        submit = st.form_submit_button("Ingresar")
+
+        if submit:
+            if codigo_ingresado == codigo_valido:
+                st.success("✅ Acceso concedido. Bienvenido.")
+                st.session_state.autenticado = True
+                st.experimental_rerun()  # recarga la app sin el formulario
+            else:
+                st.error("❌ Código incorrecto.")
+    st.stop()  # No deja avanzar si no está autenticado
 
 
 # === CONFIGURACIÓN DE GEMINI ===
@@ -148,3 +157,8 @@ else:
                 file_name=nombre_resultado,
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
+
+if st.session_state.autenticado:
+    if st.button("🔒 Cerrar sesión"):
+        st.session_state.autenticado = False
+        st.experimental_rerun()
