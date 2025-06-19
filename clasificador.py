@@ -5,6 +5,28 @@ from io import BytesIO
 import os
 import google.generativeai as genai
 
+# === CONFIGURACIÓN BÁSICA DE LA APP ===
+st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
+
+# === ENCABEZADO VISUAL (se ve SIEMPRE) ===
+st.image("https://commons.wikimedia.org/wiki/File:Belgrano-norte-4.jpg", width=120)
+st.markdown("## Clasificador de Quejas del Transporte Público")
+
+# === VERIFICACIÓN DE CÓDIGO SECRETO ===
+codigo_valido = os.getenv("CODIGO_ACCESO")
+
+with st.form("form_codigo"):
+    st.markdown("### 🔒 Acceso restringido")
+    codigo_ingresado = st.text_input("Ingresá el código de acceso:", type="password")
+    submit = st.form_submit_button("Ingresar")
+
+if not submit or codigo_ingresado != codigo_valido:
+    st.warning("⚠️ Acceso denegado. Ingresá un código válido.")
+    st.stop()
+else:
+    st.success("✅ Acceso concedido. Bienvenido.")
+
+
 # === CONFIGURACIÓN DE GEMINI ===
 API_KEY = os.getenv("GEMINI_API_KEY")
 if not API_KEY:
