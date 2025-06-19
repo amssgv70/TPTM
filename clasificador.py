@@ -26,7 +26,7 @@ if not st.session_state.autenticado:
     if submit:
         if codigo == codigo_valido:
             st.session_state.autenticado = True
-            st.experimental_rerun()  # volver a cargar sin el formulario
+            st.rerun()  # volver a cargar sin el formulario
         else:
             st.error("❌ Código incorrecto.")
     st.stop()  # Detener todo lo demás hasta que esté autenticado
