@@ -37,7 +37,7 @@ if not st.session_state.autenticado:
 
 
 # === CONFIGURACIÓN DE GEMINI ===
-API_KEY = os.getenv("GEMINI_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY_2")
 if not API_KEY:
     st.error("❌ API Key no configurada. Definila como variable de entorno GEMINI_API_KEY en Streamlit Cloud.")
     st.stop()
