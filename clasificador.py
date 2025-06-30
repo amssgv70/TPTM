@@ -131,14 +131,43 @@ else:
             progreso = st.progress(0)
             estado = st.empty()
 
+     #       for i, texto in enumerate(df[columna].astype(str)):
+     #           estado.text(f"Clasificando fila {i + 1} de {total}...")
+     #           categoria, razon = clasificar_queja_con_razon(texto)
+     #           categorias.append(categoria)
+     #           razones.append(razon)
+     #           progreso.progress((i + 1) / total)
+     #           time.sleep(espera)
+
+            errores_consecutivos = 0
+            limite_errores = 20
+
             for i, texto in enumerate(df[columna].astype(str)):
                 estado.text(f"Clasificando fila {i + 1} de {total}...")
-                categoria, razon = clasificar_queja_con_razon(texto)
+            
+                try:
+                    categoria, razon = clasificar_queja_con_razon(texto)
+                    if categoria == "ERROR":
+                        errores_consecutivos += 1
+                        razon = razon or "Error sin mensaje"
+                    else:
+                        errores_consecutivos = 0
+                except Exception as e:
+                    categoria = "ERROR"
+                    razon = str(e)
+                    errores_consecutivos += 1
+            
                 categorias.append(categoria)
                 razones.append(razon)
                 progreso.progress((i + 1) / total)
+            
+                if errores_consecutivos >= limite_errores:
+                    st.error(f"❌ Se detectaron {errores_consecutivos} errores consecutivos. Se detiene la clasificación.")
+                    break
+            
                 time.sleep(espera)
-
+ 
+            
             df["Clasificacion-Gemini"] = categorias
             df["Razon-Gemini"] = razones
 
