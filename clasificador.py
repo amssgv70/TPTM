@@ -48,7 +48,7 @@ genai.configure(api_key=API_KEY)
 def clasificar_queja_con_razon(texto):
     prompt = f"""Leé la siguiente queja de un pasajero y devolvé SOLO:
 
-1. La categoría más adecuada según esta lista:
+1. La categoría más adecuada según esta lista centrándote en la causa raíz:
 - Servicio Operativo y Frecuencia
 - Infraestructura y Mantenimiento
 - Seguridad y Control
