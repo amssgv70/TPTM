@@ -166,8 +166,17 @@ else:
                     break
             
                 time.sleep(espera)
- 
-            
+             
+            # --- NUEVO CÓDIGO AQUÍ PARA MANEJAR EL FIN PREMATURO ---
+        # Si el bucle se detuvo antes de tiempo, rellenar el resto de las listas
+            if len(categorias) < total:
+                st.warning(f"La clasificación se detuvo prematuramente en la fila {len(categorias)}. Rellenando con 'NO_CLASIFICADO' y 'No procesado debido a errores consecutivos'.")
+                while len(categorias) < total:
+                    categorias.append("NO_CLASIFICADO")
+                    razones.append("No procesado debido a errores consecutivos")
+            # --- FIN DEL NUEVO CÓDIGO ---
+
+        
             df["Clasificacion-Gemini"] = categorias
             df["Razon-Gemini"] = razones
 
