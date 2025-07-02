@@ -5,4 +5,4 @@ openpyxl
 google-generativeai
 
 tenacity==8.2.3
-google-api-core==2.11.0
+google-api-core
