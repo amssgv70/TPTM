@@ -23,7 +23,7 @@ RETRY_EXCEPTIONS = (
     g_exceptions.ServiceUnavailable, # Servicio no disponible
     g_exceptions.InternalServerError, # Errores internos del servidor de Gemini
     g_exceptions.TooManyRequests, # Demasiadas solicitudes
-    g_exceptions.ClientDisconnect, # Desconexión del cliente (red)
+    #g_exceptions.ClientDisconnect, # Desconexión del cliente (red)
 )
 
 # === FUNCIÓN DE CLASIFICACIÓN CON RETRY ===
