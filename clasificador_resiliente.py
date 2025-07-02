@@ -82,7 +82,7 @@ Razón: <explicación>
 
 Texto: {texto_queja}
 """
-    model = genai.GenerativeModel("gemini-2.5-flash")
+    model = genai.GenerativeModel("gemini-2.0-flash")
     # Añade un timeout explícito para la llamada a la API
     response = model.generate_content(prompt, request_options={"timeout": 120}) # 120 segundos de timeout
     respuesta = response.text.strip()
