@@ -3,3 +3,6 @@ streamlit>=1.27.0
 pandas
 openpyxl
 google-generativeai
+
+tenacity==8.2.3
+google-api-core==2.11.0
