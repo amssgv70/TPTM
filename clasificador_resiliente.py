@@ -7,7 +7,32 @@ import google.generativeai as genai
 from tenacity import retry, wait_exponential, stop_after_attempt, retry_if_exception_type
 import google.api_core.exceptions as g_exceptions # Importar excepciones específicas de Google API
 
-# --- CONFIGURACIÓN BÁSICA DE LA APP y AUTENTICACIÓN (sin cambios) ---
+# === CONFIGURACIÓN BÁSICA DE LA APP ===
+#st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
+
+
+# Obtener el código válido desde variable de entorno (o valor por defecto para pruebas)
+codigo_valido = os.getenv("CODIGO_ACCESO", "clasificar2024")
+
+# Inicializar estado de sesión
+if "autenticado" not in st.session_state:
+    st.session_state.autenticado = False
+
+# Si no está autenticado, mostrar formulario y detener app si no es válido
+if not st.session_state.autenticado:
+    with st.form("form_codigo"):
+        st.markdown("### 🔒 Acceso restringido")
+        codigo = st.text_input("Ingresá el código de acceso:", type="password")
+        submit = st.form_submit_button("Ingresar")
+
+    if submit:
+        if codigo == codigo_valido:
+            st.session_state.autenticado = True
+            st.rerun()  # volver a cargar sin el formulario
+        else:
+            st.error("❌ Código incorrecto.")
+    st.stop()  # Detener todo lo demás hasta que esté autenticado
+
 
 # --- CONFIGURACIÓN DE GEMINI ---
 API_KEY = os.getenv("GEMINI_API_KEY")
