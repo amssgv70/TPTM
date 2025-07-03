@@ -5,10 +5,6 @@ from io import BytesIO
 import os
 import google.generativeai as genai
 
-# === CONFIGURACIÓN BÁSICA DE LA APP ===
-#st.set_page_config(page_title="Clasificador de Quejas", layout="centered")
-
-
 # Obtener el código válido desde variable de entorno (o valor por defecto para pruebas)
 codigo_valido = os.getenv("CODIGO_ACCESO", "clasificar2024")
 
@@ -32,12 +28,8 @@ if not st.session_state.autenticado:
     st.stop()  # Detener todo lo demás hasta que esté autenticado
 
 
-
-
-
-
 # === CONFIGURACIÓN DE GEMINI ===
-API_KEY = os.getenv("GEMINI_API_KEY")
+API_KEY = os.getenv("GEMINI_API_KEY_2")
 if not API_KEY:
     st.error("❌ API Key no configurada. Definila como variable de entorno GEMINI_API_KEY en Streamlit Cloud.")
     st.stop()
@@ -122,7 +114,7 @@ else:
         st.write(df.columns.tolist())
 
         columna = st.selectbox("Seleccioná la columna con las quejas:", df.columns)
-        espera = st.slider("⏱ Espera entre clasificaciones (segundos)", 0, 10, 5)
+        espera = st.slider("⏱ Espera entre clasificaciones (segundos)", 0, 10, 0) # Valor por defecto a 0 para mejor rendimiento
 
         if st.button("🚀 Clasificar archivo"):
             categorias = []
@@ -131,52 +123,47 @@ else:
             progreso = st.progress(0)
             estado = st.empty()
 
-     #       for i, texto in enumerate(df[columna].astype(str)):
-     #           estado.text(f"Clasificando fila {i + 1} de {total}...")
-     #           categoria, razon = clasificar_queja_con_razon(texto)
-     #           categorias.append(categoria)
-     #           razones.append(razon)
-     #           progreso.progress((i + 1) / total)
-     #           time.sleep(espera)
-
             errores_consecutivos = 0
             limite_errores = 20
 
             for i, texto in enumerate(df[columna].astype(str)):
                 estado.text(f"Clasificando fila {i + 1} de {total}...")
-            
+                
                 try:
                     categoria, razon = clasificar_queja_con_razon(texto)
                     if categoria == "ERROR":
                         errores_consecutivos += 1
-                        razon = razon or "Error sin mensaje"
+                        razon = razon or "Error sin mensaje" # Asegura que haya un mensaje de error
                     else:
-                        errores_consecutivos = 0
+                        errores_consecutivos = 0 # Reinicia el contador si la clasificación es exitosa
                 except Exception as e:
                     categoria = "ERROR"
                     razon = str(e)
                     errores_consecutivos += 1
-            
+                
                 categorias.append(categoria)
                 razones.append(razon)
                 progreso.progress((i + 1) / total)
-            
+                
                 if errores_consecutivos >= limite_errores:
                     st.error(f"❌ Se detectaron {errores_consecutivos} errores consecutivos. Se detiene la clasificación.")
-                    break
-            
-                time.sleep(espera)
-             
+                    break # Sale del bucle for
+                
+                time.sleep(espera) # Se mantiene para permitir un respiro si es necesario, pero considera eliminarlo o reducirlo
+
             # --- NUEVO CÓDIGO AQUÍ PARA MANEJAR EL FIN PREMATURO ---
-        # Si el bucle se detuvo antes de tiempo, rellenar el resto de las listas
+            # Si el bucle se detuvo antes de tiempo, rellenar el resto de las listas
             if len(categorias) < total:
-                st.warning(f"La clasificación se detuvo prematuramente en la fila {len(categorias)}. Rellenando con 'NO_CLASIFICADO' y 'No procesado debido a errores consecutivos'.")
+                st.warning(f"La clasificación se detuvo prematuramente en la fila {len(categorias)}. Rellenando el resto con 'NO_CLASIFICADO' y 'No procesado debido a errores consecutivos'.")
                 while len(categorias) < total:
                     categorias.append("NO_CLASIFICADO")
                     razones.append("No procesado debido a errores consecutivos")
+            
+            # Asegura que la barra de progreso llegue al 100% al finalizar o detenerse
+            progreso.progress(1.0)
+            estado.text("Clasificación finalizada.")
             # --- FIN DEL NUEVO CÓDIGO ---
 
-        
             df["Clasificacion-Gemini"] = categorias
             df["Razon-Gemini"] = razones
 
